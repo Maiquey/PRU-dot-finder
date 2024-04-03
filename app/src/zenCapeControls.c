@@ -85,12 +85,18 @@ static void* joystickInputThread()
         //     isPressedIn = joystick_isPressedIn(); // for stopping loop between modes
         // }
         // //sample joystick every 10s
-        // sleepForMs(10);
-        if (PruDriver_isPressedRight()){
-            PruDriver_setAllLeds(0x000f0f00);
-        } else {
-            PruDriver_setAllLeds(0x0f000f00);
+        
+        // if (PruDriver_isPressedRight()){
+        //     PruDriver_setAllLeds(0x000f0f00);
+        // } else {
+        //     PruDriver_setAllLeds(0x0f000f00);
+        // }
+        if (PruDriver_isPressedRight()) {
+            printf("hi\n");
+            pthread_cond_signal(mainCondVar);
+            isRunning = false;
         }
+        sleepForMs(10);
     }
     pthread_exit(NULL);
 }
@@ -115,9 +121,9 @@ static void* accelerometerSamplingThread()
         int16_t x_data_p = ((accelerometerOutput[1] << 8) | accelerometerOutput[0]);
         int16_t y_data_p = ((accelerometerOutput[3] << 8) | accelerometerOutput[2]);
         int16_t z_data_p = ((accelerometerOutput[5] << 8) | accelerometerOutput[4]);
-        int16_t x_data = x_data_p / X_G_DIVISOR;
-        int16_t y_data = y_data_p / Y_G_DIVISOR;
-        int16_t z_data = z_data_p / Z_G_DIVISOR;
+        // int16_t x_data = x_data_p / X_G_DIVISOR;
+        // int16_t y_data = y_data_p / Y_G_DIVISOR;
+        // int16_t z_data = z_data_p / Z_G_DIVISOR;
         
         //Algorithm: Baseline G's for X and Y direction is 0, Z is 1
         //    If the last reading on X or Y was lower G value at zero, and current reading is baseline or above, trigger a sound
@@ -146,7 +152,18 @@ static void* accelerometerSamplingThread()
         // x_last = x_data;
         // y_last = y_data;
         // z_last = z_data;
-        printf("(x, y, z) = (%d, %d, %d)\n", x_data, y_data, z_data);
+        printf("(x, y, z) = (%d, %d, %d)\n", x_data_p, y_data_p, z_data_p);
+        if (x_data_p < -10000){ //Left - Red
+            PruDriver_setAllLeds(0x000f0000);
+        } else if (x_data_p > 10000){ //Right - Green
+            PruDriver_setAllLeds(0x0f000000);
+        } else if (y_data_p < -10000){ //Up - Yellow
+            PruDriver_setAllLeds(0x0f0f0000);
+        } else if (y_data_p > 10000){ //Down - Teal
+            PruDriver_setAllLeds(0x0f000f00);
+        } else {
+            PruDriver_setAllLeds(0x000f0f00);
+        }
         free(accelerometerOutput);
         sleepForMs(10); // sample every 10ms
     }

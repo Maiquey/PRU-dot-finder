@@ -93,7 +93,7 @@ void PruDriver_cleanup(void) {
 }
 
 bool PruDriver_isPressedRight(void) {
-    return pSharedPru0->isButtonPressed;
+    return (pSharedPru0->isButtonPressed == 0);
 }
 
 void PruDriver_setAllLeds(uint32_t colour)
