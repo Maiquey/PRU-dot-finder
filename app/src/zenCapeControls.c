@@ -114,17 +114,18 @@ static void* joystickInputThread()
         // } else {
         //     PruDriver_setAllLeds(0x0f000f00);
         // }
-            if (PruDriver_isPressedRight()) {
-                if (onTarget){
-                    printf("hit!!\n");
-                    generateNewTarget();
-                }
-                
-                printf("hi\n");
-                // pthread_cond_signal(mainCondVar);
-                // isRunning = false;
+        // printf("(Down, Right) = (%d, %d)\n", PruDriver_isPressedDown(), PruDriver_isPressedRight());
+        ///
+            if (PruDriver_isPressedDown() && onTarget) {
+                generateNewTarget();
+                printf("hit!!!\n");
                 debounceTimestamp = getTimeInMs();
+            } else if (PruDriver_isPressedRight()) {
+                printf("exiting.\n");
+                pthread_cond_signal(mainCondVar);
+                isRunning = false;
             }
+        ///
         }
         sleepForMs(10);
     }

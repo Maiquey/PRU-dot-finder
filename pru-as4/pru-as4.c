@@ -28,6 +28,7 @@ volatile register uint32_t __R31; // input GPIO register
 // GPIO Input: P8_15 = pru0_pru_r31_15
 //      = JSRT (Joystick Right) on Zen Cape
 #define JOYSTICK_RIGHT_MASK (1 << 15)
+#define JOYSTICK_DOWN_MASK (1 << 14)
 
 
 // Shared Memory Configuration
@@ -65,34 +66,36 @@ static void driveLeds()
     __delay_cycles(resetCycles);
 }
 
-static void setAllLeds(volatile sharedMemStruct_t* sharedMem, uint32_t colour)
-{
-    for (int i = 0; i < STR_LEN; i++){
-        sharedMem->ledStrip[i] = colour;
-    }
-}
+// static void setAllLeds(volatile sharedMemStruct_t* sharedMem, uint32_t colour)
+// {
+//     for (int i = 0; i < STR_LEN; i++){
+//         sharedMem->ledStrip[i] = colour;
+//     }
+// }
 
 void main(void)
 {
     // Initialize:
-    pSharedMemStruct->isLedOn = true;
-    pSharedMemStruct->isButtonPressed = false;
+    // pSharedMemStruct->isLedOn = true;
+    pSharedMemStruct->isRightPressed = false;
+    pSharedMemStruct->isDownPressed = false;
 
     CT_CFG.SYSCFG_bit.STANDBY_INIT = 0;
 
     while (true) {
 
         // Drive LED from shared memory
-        if (pSharedMemStruct->isLedOn) {
-            __R30 |= DIGIT_ON_OFF_MASK;
-        } else {
-            __R30 &= ~DIGIT_ON_OFF_MASK;
-        }
+        // if (pSharedMemStruct->isLedOn) {
+        //     __R30 |= DIGIT_ON_OFF_MASK;
+        // } else {
+        //     __R30 &= ~DIGIT_ON_OFF_MASK;
+        // }
 
         // Sample button state to shared memory
-        pSharedMemStruct->isButtonPressed = (__R31 & JOYSTICK_RIGHT_MASK) != 0;
+        pSharedMemStruct->isRightPressed = (__R31 & JOYSTICK_RIGHT_MASK) != 0;
+        pSharedMemStruct->isDownPressed = (__R31 & JOYSTICK_DOWN_MASK) != 0;
 
-        // if (pSharedMemStruct->isButtonPressed) {
+        // if (pSharedMemStruct->isRightPressed) {
         //     setAllLeds(pSharedMemStruct, 0x000f0f00);
         // } else {
         //     setAllLeds(pSharedMemStruct, 0x0f000f00);

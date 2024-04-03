@@ -53,35 +53,36 @@ static void runCommand(char* command)
     }
 }
 
-void runSimplePruProgram(void) {
-    printf("Sharing memory with PRU\n");
-    printf(" LED should toggle each second\n");
-    printf(" Press the button to see its state here.\n");
+// void runSimplePruProgram(void) {
+//     printf("Sharing memory with PRU\n");
+//     printf(" LED should toggle each second\n");
+//     printf(" Press the button to see its state here.\n");
 
-    // Get access to shared memory for my uses
-    volatile void *pPruBase = getPruMmapAddr();
-    volatile sharedMemStruct_t *pSharedPru0 = PRU0_MEM_FROM_BASE(pPruBase);
+//     // Get access to shared memory for my uses
+//     volatile void *pPruBase = getPruMmapAddr();
+//     volatile sharedMemStruct_t *pSharedPru0 = PRU0_MEM_FROM_BASE(pPruBase);
 
-    // Drive it
-    for (int i = 0; i < 20; i++) {
-        // Drive LED
-        pSharedPru0->isLedOn = (i % 2 == 0);
+//     // Drive it
+//     for (int i = 0; i < 20; i++) {
+//         // Drive LED
+//         pSharedPru0->isLedOn = (i % 2 == 0);
 
-        // Print button
-        printf("Button: %d\n", pSharedPru0->isButtonPressed);
+//         // Print button
+//         printf("Button: %d\n", pSharedPru0->isButtonPressed);
         
-        // Timing
-        sleep(1);
-    }
+//         // Timing
+//         sleep(1);
+//     }
 
-    // Cleanup
-    freePruMmapAddr(pPruBase);
-}
+//     // Cleanup
+//     freePruMmapAddr(pPruBase);
+// }
 
 void PruDriver_init(void) {
     runCommand("config-pin P8.11 pruout");
     runCommand("config-pin P8.12 pruout");
     runCommand("config-pin P8.15 pruin");
+    runCommand("config-pin P8.16 pruin");
     pPruBase = getPruMmapAddr();
     pSharedPru0 = PRU0_MEM_FROM_BASE(pPruBase);
     isInitialized = true;
@@ -93,7 +94,11 @@ void PruDriver_cleanup(void) {
 }
 
 bool PruDriver_isPressedRight(void) {
-    return (pSharedPru0->isButtonPressed == 0);
+    return (pSharedPru0->isRightPressed == 0);
+}
+
+bool PruDriver_isPressedDown(void) {
+    return (pSharedPru0->isDownPressed == 0);
 }
 
 void PruDriver_setAllLeds(uint32_t colour)

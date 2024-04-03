@@ -17,8 +17,8 @@
 //  My Shared Memory Structure
 // ----------------------------------------------------------------
 typedef struct {
-    bool isLedOn;
-    bool isButtonPressed;  
+    bool isDownPressed;
+    bool isRightPressed;
     uint8_t pad1;
     uint8_t pad2;
     uint32_t ledStrip[STR_LEN];
