@@ -69,6 +69,7 @@ void zenCapeControls_cleanup(void)
     isRunning = false;
     pthread_join(joyStickThreadId, NULL);
     pthread_join(accelerometerThreadId, NULL);
+    PruDriver_setAllLeds(0x00000000);
     is_initialized = false;
 }
 
