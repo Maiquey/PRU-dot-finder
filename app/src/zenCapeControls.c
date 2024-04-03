@@ -35,6 +35,8 @@ static bool onTarget = false;
 static double target_x;
 static double target_y;
 
+static int targetsHit = 0;
+
 enum displayColour{
     GREEN,
     BLUE,
@@ -119,6 +121,7 @@ static void* joystickInputThread()
             if (PruDriver_isPressedDown() && onTarget) {
                 generateNewTarget();
                 printf("hit!!!\n");
+                targetsHit++;
                 debounceTimestamp = getTimeInMs();
             } else if (PruDriver_isPressedRight()) {
                 printf("exiting.\n");
@@ -127,6 +130,7 @@ static void* joystickInputThread()
             }
         ///
         }
+        SegDisplay_setNumber(targetsHit);
         sleepForMs(10);
     }
     pthread_exit(NULL);

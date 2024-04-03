@@ -80,7 +80,7 @@ static void runCommand(char* command)
 
 void PruDriver_init(void) {
     runCommand("config-pin P8.11 pruout");
-    runCommand("config-pin P8.12 pruout");
+    // runCommand("config-pin P8.12 pruout"); // for driving seg display with PRU (not needed)
     runCommand("config-pin P8.15 pruin");
     runCommand("config-pin P8.16 pruin");
     pPruBase = getPruMmapAddr();

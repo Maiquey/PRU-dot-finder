@@ -12,6 +12,7 @@
 #include <math.h>
 #include "hal/accelerometer.h"
 #include "hal/timing.h"
+#include "hal/segDisplay.h"
 
 void zenCapeControls_init(pthread_cond_t* stopCondVar);
 void zenCapeControls_cleanup(void);
