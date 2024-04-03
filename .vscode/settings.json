@@ -2,6 +2,8 @@
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
     "files.associations": {
         "unistd.h": "c",
-        "cstdlib": "c"
+        "cstdlib": "c",
+        "assert.h": "c",
+        "zencapecontrols.h": "c"
     }
 }

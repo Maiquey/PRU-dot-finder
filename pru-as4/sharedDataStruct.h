@@ -5,6 +5,8 @@
 #include <stdint.h>
 // #include <stdalign.h>
 
+#define STR_LEN 8
+
 //  WARNING:
 //  Fields in the struct must be aligned to match ARM's alignment
 //      bool/char, uint8_t: byte aligned
@@ -19,6 +21,6 @@ typedef struct {
     bool isButtonPressed;  
     uint8_t pad1;
     uint8_t pad2;
-    uint32_t ledStrip[8];
+    uint32_t ledStrip[STR_LEN];
 } sharedMemStruct_t;
 #endif

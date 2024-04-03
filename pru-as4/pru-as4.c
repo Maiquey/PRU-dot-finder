@@ -4,7 +4,6 @@
 #include "resource_table_empty.h"
 #include "sharedDataStruct.h"
 
-#define STR_LEN         8       // # LEDs in our string
 #define oneCyclesOn     700/5   // Stay on 700ns
 #define oneCyclesOff    800/5
 #define zeroCyclesOn    350/5
@@ -93,11 +92,11 @@ void main(void)
         // Sample button state to shared memory
         pSharedMemStruct->isButtonPressed = (__R31 & JOYSTICK_RIGHT_MASK) != 0;
 
-        if ((__R31 & JOYSTICK_RIGHT_MASK) != 0) {
-            setAllLeds(pSharedMemStruct, 0x0f000000);
-        } else {
-            setAllLeds(pSharedMemStruct, 0x000f0000);
-        }
+        // if (pSharedMemStruct->isButtonPressed) {
+        //     setAllLeds(pSharedMemStruct, 0x000f0f00);
+        // } else {
+        //     setAllLeds(pSharedMemStruct, 0x0f000f00);
+        // }
 
         driveLeds();
     }

@@ -24,6 +24,11 @@
 #define PRU1_MEM_FROM_BASE(base) ( (base) + PRU1_DRAM + PRU_MEM_RESERVED)
 #define PRUSHARED_MEM_FROM_BASE(base) ( (base) + PRU_SHAREDMEM)
 
-void runSimplePruProgram(void);
+void PruDriver_init(void);
+void PruDriver_cleanup(void);
+// void runSimplePruProgram(void);
+bool PruDriver_isPressedRight(void);
+bool PruDriver_isPressedDown(void);
+void PruDriver_setAllLeds(uint32_t colour);
 
 #endif
