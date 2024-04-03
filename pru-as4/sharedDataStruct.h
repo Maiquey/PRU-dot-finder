@@ -17,7 +17,8 @@
 typedef struct {
     bool isLedOn;
     bool isButtonPressed;  
-    int num;
-    double num2;
+    uint8_t pad1;
+    uint8_t pad2;
+    uint32_t ledStrip[8];
 } sharedMemStruct_t;
 #endif
