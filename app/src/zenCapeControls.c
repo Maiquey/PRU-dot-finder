@@ -17,6 +17,9 @@
 #define X_G_DIVISOR 12000 //decrease this value to make Hihat more sensitive
 #define Y_G_DIVISOR 14000 //decrease this value to make Snare more sensitive
 #define Z_G_DIVISOR 16000 //decrease this value to make Bass more sensitive
+#define _1_G_DIVISOR 16000
+
+#define CORRECT_TARGET_NOISE 0.05
 
 static pthread_cond_t* mainCondVar;
 
@@ -27,12 +30,26 @@ static pthread_t accelerometerThreadId;
 
 static bool is_initialized = false;
 static bool isRunning = false;
+static bool onTarget = false;
+
+static double target_x;
+static double target_y;
+
+static void generateNewTarget(void)
+{
+    // Generate a random target (x, y) where each is in the range [-0.5, 0.5]
+    // Generate a random number between 0 and 1, then subtract 0.5
+    target_x = ((double)rand() / RAND_MAX) - 0.5;
+    target_y = ((double)rand() / RAND_MAX) - 0.5;
+}
 
 void zenCapeControls_init(pthread_cond_t* stopCondVar)
 {
     assert(!is_initialized);
+    srand(time(NULL));
     isRunning = true;
     mainCondVar = stopCondVar;
+    generateNewTarget();
     pthread_create(&joyStickThreadId, NULL, joystickInputThread, NULL);
     pthread_create(&accelerometerThreadId, NULL, accelerometerSamplingThread, NULL);
     is_initialized = true;
@@ -50,10 +67,10 @@ void zenCapeControls_cleanup(void)
 // Thread to sample joystick input
 static void* joystickInputThread()
 {
-    // long long debounceTimestamp = getTimeInMs();
+    long long debounceTimestamp = getTimeInMs();
     bool isPressedIn = false;
     while(isRunning){
-        // if (getTimeInMs() - debounceTimestamp > JOYSTICK_DEBOUNCE_TIME){
+        if (getTimeInMs() - debounceTimestamp > JOYSTICK_DEBOUNCE_TIME){
         //     int joystickID = joystick_getJoyStickPress();
         //     if (joystickID != NO_INPUT){
         //         switch (joystickID) {
@@ -91,10 +108,17 @@ static void* joystickInputThread()
         // } else {
         //     PruDriver_setAllLeds(0x0f000f00);
         // }
-        if (PruDriver_isPressedRight()) {
-            printf("hi\n");
-            pthread_cond_signal(mainCondVar);
-            isRunning = false;
+            if (PruDriver_isPressedRight()) {
+                if (onTarget){
+                    printf("hit!!\n");
+                    generateNewTarget();
+                }
+                
+                printf("hi\n");
+                // pthread_cond_signal(mainCondVar);
+                // isRunning = false;
+                debounceTimestamp = getTimeInMs();
+            }
         }
         sleepForMs(10);
     }
@@ -121,9 +145,9 @@ static void* accelerometerSamplingThread()
         int16_t x_data_p = ((accelerometerOutput[1] << 8) | accelerometerOutput[0]);
         int16_t y_data_p = ((accelerometerOutput[3] << 8) | accelerometerOutput[2]);
         int16_t z_data_p = ((accelerometerOutput[5] << 8) | accelerometerOutput[4]);
-        // int16_t x_data = x_data_p / X_G_DIVISOR;
-        // int16_t y_data = y_data_p / Y_G_DIVISOR;
-        // int16_t z_data = z_data_p / Z_G_DIVISOR;
+        double x_data = (double)x_data_p / (double)_1_G_DIVISOR;
+        double y_data = (double)y_data_p / (double)_1_G_DIVISOR;
+        double z_data = (double)z_data_p / (double)_1_G_DIVISOR;
         
         //Algorithm: Baseline G's for X and Y direction is 0, Z is 1
         //    If the last reading on X or Y was lower G value at zero, and current reading is baseline or above, trigger a sound
@@ -152,18 +176,28 @@ static void* accelerometerSamplingThread()
         // x_last = x_data;
         // y_last = y_data;
         // z_last = z_data;
-        printf("(x, y, z) = (%d, %d, %d)\n", x_data_p, y_data_p, z_data_p);
-        if (x_data_p < -10000){ //Left - Red
-            PruDriver_setAllLeds(0x000f0000);
-        } else if (x_data_p > 10000){ //Right - Green
-            PruDriver_setAllLeds(0x0f000000);
-        } else if (y_data_p < -10000){ //Up - Yellow
-            PruDriver_setAllLeds(0x0f0f0000);
-        } else if (y_data_p > 10000){ //Down - Teal
-            PruDriver_setAllLeds(0x0f000f00);
+        // printf("(x, y, z) = (%.4f, %.4f, %.4f)\n", x_data, y_data, z_data);
+        if (x_data < (target_x - CORRECT_TARGET_NOISE)) {
+            onTarget = false;
+            PruDriver_setAllLeds(0x01000000);
+        } else if (x_data > (target_x + CORRECT_TARGET_NOISE)) {
+            onTarget = false;
+            PruDriver_setAllLeds(0x00010000);
         } else {
-            PruDriver_setAllLeds(0x000f0f00);
+            onTarget = true;
+            PruDriver_setAllLeds(0x00000100);
         }
+        // if (x_data_p < -10000){ //Left - Red
+        //     PruDriver_setAllLeds(0x000f0000);
+        // } else if (x_data_p > 10000){ //Right - Green
+        //     PruDriver_setAllLeds(0x0f000000);
+        // } else if (y_data_p < -10000){ //Up - Yellow
+        //     PruDriver_setAllLeds(0x0f0f0000);
+        // } else if (y_data_p > 10000){ //Down - Teal
+        //     PruDriver_setAllLeds(0x0f000f00);
+        // } else {
+        //     PruDriver_setAllLeds(0x000f0f00);
+        // }
         free(accelerometerOutput);
         sleepForMs(10); // sample every 10ms
     }
