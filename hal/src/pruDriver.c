@@ -102,3 +102,16 @@ void PruDriver_setAllLeds(uint32_t colour)
         pSharedPru0->ledStrip[i] = colour;
     }
 }
+
+void PruDriver_setTrioLeds(int index, uint32_t colourStrong, uint32_t colourWeak)
+{
+    for (int i = 0; i < STR_LEN; i++){
+        if (i == index){
+            pSharedPru0->ledStrip[i] = colourStrong;
+        } else if (i == index - 1 || i == index + 1){
+            pSharedPru0->ledStrip[i] = colourWeak;
+        } else {
+            pSharedPru0->ledStrip[i] = 0x00000000;
+        }
+    }
+}

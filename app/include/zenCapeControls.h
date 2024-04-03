@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <pthread.h>
 #include <assert.h>
+#include <math.h>
 #include "hal/accelerometer.h"
 #include "hal/timing.h"
 

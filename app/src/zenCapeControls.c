@@ -19,7 +19,7 @@
 #define Z_G_DIVISOR 16000 //decrease this value to make Bass more sensitive
 #define _1_G_DIVISOR 16000
 
-#define CORRECT_TARGET_NOISE 0.05
+#define CORRECT_TARGET_NOISE 0.1
 
 static pthread_cond_t* mainCondVar;
 
@@ -34,6 +34,12 @@ static bool onTarget = false;
 
 static double target_x;
 static double target_y;
+
+enum displayColour{
+    GREEN,
+    BLUE,
+    RED
+};
 
 static void generateNewTarget(void)
 {
@@ -177,16 +183,69 @@ static void* accelerometerSamplingThread()
         // y_last = y_data;
         // z_last = z_data;
         // printf("(x, y, z) = (%.4f, %.4f, %.4f)\n", x_data, y_data, z_data);
+        enum displayColour currentColour;
         if (x_data < (target_x - CORRECT_TARGET_NOISE)) {
-            onTarget = false;
-            PruDriver_setAllLeds(0x01000000);
+            currentColour = GREEN;
+            // PruDriver_setAllLeds(0x01000000);
         } else if (x_data > (target_x + CORRECT_TARGET_NOISE)) {
-            onTarget = false;
-            PruDriver_setAllLeds(0x00010000);
+            currentColour = RED;
+            // PruDriver_setAllLeds(0x00010000);
         } else {
-            onTarget = true;
-            PruDriver_setAllLeds(0x00000100);
+            currentColour = BLUE;
+            // PruDriver_setAllLeds(0x00000100);
         }
+        int index;
+        if (y_data <= (target_y + CORRECT_TARGET_NOISE) && y_data >= (target_y - CORRECT_TARGET_NOISE)){
+            switch(currentColour){
+                case GREEN:
+                    onTarget = false;
+                    PruDriver_setAllLeds(0x0f000000);
+                    break;
+                case BLUE:
+                    onTarget = true;
+                    PruDriver_setAllLeds(0x00000f00);
+                    break;
+                case RED:
+                    onTarget = false;
+                    PruDriver_setAllLeds(0x000f0000);
+                    break;
+            }
+        } else{
+            if (y_data > (target_y + CORRECT_TARGET_NOISE)){ //too low, display 4-7
+                double distance = y_data - target_y;
+                index = 7;
+                while (index > 4){
+                    if (distance > CORRECT_TARGET_NOISE*(index-3)){
+                        break;
+                    }
+                    index--;
+                }
+            } else {
+                double distance = y_data - target_y;
+                index = 0;
+                while (index < 3){
+                    if (distance < (-1)*CORRECT_TARGET_NOISE*(4-index)){
+                        break;
+                    }
+                    index++;
+                }
+            }
+            switch(currentColour){
+                case GREEN:
+                    onTarget = false;
+                    PruDriver_setTrioLeds(index, 0x0f000000, 0x01000000);
+                    break;
+                case BLUE:
+                    onTarget = false;
+                    PruDriver_setTrioLeds(index, 0x00000f00, 0x00000100);
+                    break;
+                case RED:
+                    onTarget = false;
+                    PruDriver_setTrioLeds(index, 0x000f0000, 0x00010000);
+                    break;
+            }
+        } 
+        
         // if (x_data_p < -10000){ //Left - Red
         //     PruDriver_setAllLeds(0x000f0000);
         // } else if (x_data_p > 10000){ //Right - Green

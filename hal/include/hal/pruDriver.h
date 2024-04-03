@@ -30,5 +30,6 @@ void PruDriver_cleanup(void);
 bool PruDriver_isPressedRight(void);
 bool PruDriver_isPressedDown(void);
 void PruDriver_setAllLeds(uint32_t colour);
+void PruDriver_setTrioLeds(int index, uint32_t colourStrong, uint32_t colourWeak);
 
 #endif
