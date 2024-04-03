@@ -1,6 +1,7 @@
 {
     "C_Cpp.codeAnalysis.clangTidy.enabled": true,
     "files.associations": {
-        "unistd.h": "c"
+        "unistd.h": "c",
+        "cstdlib": "c"
     }
 }

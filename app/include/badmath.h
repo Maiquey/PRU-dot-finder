@@ -5,6 +5,8 @@
 #ifndef _BADMATH_H_
 #define _BADMATH_H_
 
+// #include "sharedDataStruct.h"
+
 void badmath_init(void);
 short badmath_factorial(int n);
 void badmath_cleanup(void);

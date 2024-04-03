@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+// #include <stdalign.h>
 
 //  WARNING:
 //  Fields in the struct must be aligned to match ARM's alignment
@@ -16,5 +17,7 @@
 typedef struct {
     bool isLedOn;
     bool isButtonPressed;  
+    int num;
+    double num2;
 } sharedMemStruct_t;
 #endif
