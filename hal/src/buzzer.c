@@ -116,7 +116,7 @@ void Buzzer_cleanup(void){
 }
 
 void Buzzer_playHit(void){
-    if (!playingHit && !playingMiss){
+    if (!playingHit){
         playingHit = true;
     }
 }

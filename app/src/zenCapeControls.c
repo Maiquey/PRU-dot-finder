@@ -225,8 +225,8 @@ static void* accelerometerSamplingThread()
         } else{
             if (y_data > (target_y + CORRECT_TARGET_NOISE)){ //too low, display 4-7
                 double distance = y_data - target_y;
-                index = 7;
-                while (index > 4){
+                index = 8;
+                while (index > 3){
                     if (distance > CORRECT_TARGET_NOISE*(index-3)){
                         break;
                     }
@@ -234,8 +234,8 @@ static void* accelerometerSamplingThread()
                 }
             } else {
                 double distance = y_data - target_y;
-                index = 0;
-                while (index < 3){
+                index = -1;
+                while (index < 4){
                     if (distance < (-1)*CORRECT_TARGET_NOISE*(4-index)){
                         break;
                     }
