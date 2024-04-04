@@ -16,7 +16,12 @@
 static pthread_t thread;
 
 static bool is_initialized = false;
-static bool isRunning = true;
+static bool isRunning = false;
+
+static bool playingHit = false;
+static bool playingMiss = false;
+
+static void* soundPlaybackThread();
 
 // // Main thread function
 // // Continuosly samples the a2d reading of potentiometer and adjusts frequency of led accordingly
@@ -98,39 +103,61 @@ void Buzzer_init(void)
     assert(!is_initialized);
     runCommand("config-pin p9_22 pwm");
     is_initialized = true;
+    isRunning = true;
+    pthread_create(&thread, NULL, soundPlaybackThread, NULL);
 }
 
 void Buzzer_cleanup(void){
     assert(is_initialized);
     is_initialized = false;
+    isRunning = false;
+    pthread_join(thread, NULL);
+    writeValueToFile(BUZZER_ENABLE_FILE, 0);
 }
 
 void Buzzer_playHit(void){
-    
-    writeValueToFile(BUZZER_ENABLE_FILE, 1);
-    double freq = 1000.00;
-    while (freq > 0){
-        int period = getPeriod(freq);
-        writeValueToFile(BUZZER_PERIOD_FILE, period);
-        writeValueToFile(BUZZER_DUTY_CYCLE_FILE, period / 2);
-        freq -= 20.00;
-        sleepForMs(10); 
+    if (!playingHit && !playingMiss){
+        playingHit = true;
     }
-    writeValueToFile(BUZZER_ENABLE_FILE, 0);
 }
 
 void Buzzer_playMiss(void){
+    if (!playingHit && !playingMiss){
+        playingMiss = true;
+    }
+}
 
-    writeValueToFile(BUZZER_ENABLE_FILE, 1);
-    for (int i = 0; i < 4; i++){
-        double freq = 600.00;
-        while (freq > 200.00){
-            int period = getPeriod(freq);
-            writeValueToFile(BUZZER_PERIOD_FILE, period);
-            writeValueToFile(BUZZER_DUTY_CYCLE_FILE, period / 2);
-            freq -= 20.00;
-            sleepForMs(6); 
+//background thread
+static void* soundPlaybackThread()
+{
+    while (isRunning) {
+        if (playingHit){
+            writeValueToFile(BUZZER_ENABLE_FILE, 1);
+            double freq = 1000.00;
+            while (freq > 0){
+                int period = getPeriod(freq);
+                writeValueToFile(BUZZER_PERIOD_FILE, period);
+                writeValueToFile(BUZZER_DUTY_CYCLE_FILE, period / 2);
+                freq -= 20.00;
+                sleepForMs(10); 
+            }
+            writeValueToFile(BUZZER_ENABLE_FILE, 0);
+            playingHit = false;
+        } else if (playingMiss) {
+            writeValueToFile(BUZZER_ENABLE_FILE, 1);
+            for (int i = 0; i < 4; i++){
+                double freq = 600.00;
+                while (freq > 200.00){
+                    int period = getPeriod(freq);
+                    writeValueToFile(BUZZER_PERIOD_FILE, period);
+                    writeValueToFile(BUZZER_DUTY_CYCLE_FILE, period / 2);
+                    freq -= 20.00;
+                    sleepForMs(6); 
+                }
+            }
+            writeValueToFile(BUZZER_ENABLE_FILE, 0);
+            playingMiss = false;
         }
     }
-    writeValueToFile(BUZZER_ENABLE_FILE, 0);
+    pthread_exit(NULL);
 }
