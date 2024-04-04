@@ -17,6 +17,7 @@
 
 void Buzzer_init(void);
 void Buzzer_cleanup(void);
-void Buzzer_playSound(void);
+void Buzzer_playHit(void);
+void Buzzer_playMiss(void);
 
 #endif

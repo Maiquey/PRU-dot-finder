@@ -105,27 +105,32 @@ void Buzzer_cleanup(void){
     is_initialized = false;
 }
 
-void Buzzer_playSound(void){
-    printf("playing sound!\n");
-    double c_scale[8] = {
-        NOTE_C,
-        NOTE_D,
-        NOTE_E,
-        NOTE_F,
-        NOTE_G,
-        NOTE_A,
-        NOTE_B,
-        NOTE_HIGH_C
-    };
-
+void Buzzer_playHit(void){
+    
     writeValueToFile(BUZZER_ENABLE_FILE, 1);
-    for (int i = 0; i < 8; i++){
-        int period = getPeriod(c_scale[i]);
+    double freq = 1000.00;
+    while (freq > 0){
+        int period = getPeriod(freq);
         writeValueToFile(BUZZER_PERIOD_FILE, period);
         writeValueToFile(BUZZER_DUTY_CYCLE_FILE, period / 2);
-        printf("writing period of %d\n", period);
-        sleepForMs(50);
+        freq -= 20.00;
+        sleepForMs(10); 
     }
-    
+    writeValueToFile(BUZZER_ENABLE_FILE, 0);
+}
+
+void Buzzer_playMiss(void){
+
+    writeValueToFile(BUZZER_ENABLE_FILE, 1);
+    for (int i = 0; i < 4; i++){
+        double freq = 600.00;
+        while (freq > 200.00){
+            int period = getPeriod(freq);
+            writeValueToFile(BUZZER_PERIOD_FILE, period);
+            writeValueToFile(BUZZER_DUTY_CYCLE_FILE, period / 2);
+            freq -= 20.00;
+            sleepForMs(6); 
+        }
+    }
     writeValueToFile(BUZZER_ENABLE_FILE, 0);
 }
