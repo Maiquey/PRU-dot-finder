@@ -65,7 +65,6 @@ void gameLogic_cleanup(void)
 static void* joystickInputThread()
 {
     long long debounceTimestamp = getTimeInMs();
-    bool isPressedIn = false;
     while(isRunning){
         if (getTimeInMs() - debounceTimestamp > JOYSTICK_DEBOUNCE_TIME){
             if (PruDriver_isPressedDown()) {
