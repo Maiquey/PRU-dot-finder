@@ -20,6 +20,7 @@ int main()
     PruDriver_init();
     accelerometer_init();
     SegDisplay_init();
+    Buzzer_init();
     zenCapeControls_init(&condVarFinished);
     // Network_init(&condVarFinished);
     
@@ -31,6 +32,7 @@ int main()
     // Cleanup all modules (HAL modules last)
     // Network_cleanup();
     zenCapeControls_cleanup();
+    Buzzer_cleanup();
     SegDisplay_cleanup();
     accelerometer_cleanup();
     PruDriver_cleanup();

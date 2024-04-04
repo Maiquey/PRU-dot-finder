@@ -120,14 +120,15 @@ static void* joystickInputThread()
         // printf("(Down, Right) = (%d, %d)\n", PruDriver_isPressedDown(), PruDriver_isPressedRight());
         ///
             if (PruDriver_isPressedDown() && onTarget) {
-                generateNewTarget();
-                printf("hit!!!\n");
-                targetsHit++;
-                debounceTimestamp = getTimeInMs();
+                // generateNewTarget();
+                // printf("hit!!!\n");
+                // targetsHit++;
+                // debounceTimestamp = getTimeInMs();
             } else if (PruDriver_isPressedRight()) {
-                printf("exiting.\n");
-                pthread_cond_signal(mainCondVar);
-                isRunning = false;
+                // printf("exiting.\n");
+                // pthread_cond_signal(mainCondVar);
+                // isRunning = false;
+                Buzzer_playSound();
             }
         ///
         }
