@@ -2,8 +2,8 @@
 // spawns two threads to continuously monitor and sample the joystick and accelerometer
 // calls the necessary functions from drumBeat interface when certain events triggered
 
-#ifndef _ZENCAPE_CONTROLS_H_
-#define _ZENCAPE_CONTROLS_H_
+#ifndef _GAME_LOGIC_H_
+#define _GAME_LOGIC_H_
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -15,7 +15,7 @@
 #include "hal/segDisplay.h"
 #include "hal/buzzer.h"
 
-void zenCapeControls_init(pthread_cond_t* stopCondVar);
-void zenCapeControls_cleanup(void);
+void gameLogic_init(pthread_cond_t* stopCondVar);
+void gameLogic_cleanup(void);
 
 #endif

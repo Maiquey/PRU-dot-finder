@@ -1,4 +1,4 @@
-#include "zenCapeControls.h"
+#include "gameLogic.h"
 #include "hal/pruDriver.h"
 
 #define NO_INPUT -1
@@ -51,7 +51,7 @@ static void generateNewTarget(void)
     target_y = ((double)rand() / RAND_MAX) - 0.5;
 }
 
-void zenCapeControls_init(pthread_cond_t* stopCondVar)
+void gameLogic_init(pthread_cond_t* stopCondVar)
 {
     assert(!is_initialized);
     srand(time(NULL));
@@ -63,7 +63,7 @@ void zenCapeControls_init(pthread_cond_t* stopCondVar)
     is_initialized = true;
 }
 
-void zenCapeControls_cleanup(void)
+void gameLogic_cleanup(void)
 {
     assert(is_initialized);
     isRunning = false;
@@ -122,7 +122,6 @@ static void* joystickInputThread()
             if (PruDriver_isPressedDown()) {
                 if (onTarget){
                     generateNewTarget();
-                    printf("hit!!!\n");
                     targetsHit++;
                     debounceTimestamp = getTimeInMs();
                     Buzzer_playHit();
@@ -131,7 +130,6 @@ static void* joystickInputThread()
                 }
                 
             } else if (PruDriver_isPressedRight()) {
-                printf("exiting.\n");
                 pthread_cond_signal(mainCondVar);
                 isRunning = false;
             }

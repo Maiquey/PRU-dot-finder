@@ -4,7 +4,6 @@
         "unistd.h": "c",
         "cstdlib": "c",
         "assert.h": "c",
-        "zencapecontrols.h": "c",
         "stdbool.h": "c",
         "i2c-dev.h": "c",
         "ioctl.h": "c",
