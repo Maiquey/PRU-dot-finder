@@ -12,6 +12,10 @@ add_compile_options(-fdiagnostics-color)
 add_compile_options(-fsanitize=address)
 add_link_options(-fsanitize=address)
 
+# for valgrind
+# add_compile_options(-pthread)
+# add_link_options(-pthread)
+
 # What folders to build
 add_subdirectory(hal)  
 add_subdirectory(app)
