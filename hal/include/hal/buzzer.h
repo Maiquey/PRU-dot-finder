@@ -1,3 +1,6 @@
+// Buzzer module
+// initializes buzzer and supports playback of two sounds via PWM
+
 #ifndef _BUZZER_H
 #define _BUZZER_H
 

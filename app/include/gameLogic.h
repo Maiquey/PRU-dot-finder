@@ -1,6 +1,7 @@
-// High-level module for sampling user input on the zen cape
-// spawns two threads to continuously monitor and sample the joystick and accelerometer
-// calls the necessary functions from drumBeat interface when certain events triggered
+// High-level module for handling game logic
+// spawns two threads to continuously monitor and sample the joystick (via PRU Driver) and accelerometer
+// calls the necessary functions from pruDriver interface when certain events triggered
+// passed LED commands to the pruDriver
 
 #ifndef _GAME_LOGIC_H_
 #define _GAME_LOGIC_H_

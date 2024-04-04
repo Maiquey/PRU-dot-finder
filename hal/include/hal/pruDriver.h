@@ -1,3 +1,7 @@
+// PRU Driver module
+// Handles interaction with the PRU shared object
+// updates the values for LED light strip and reads PRU output on state of the joystick
+
 #ifndef _PRU_DRIVER_H_
 #define _PRU_DRIVER_H_
 

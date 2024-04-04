@@ -4,15 +4,6 @@
 #define BUZZER_DUTY_CYCLE_FILE "/dev/bone/pwm/0/a/duty_cycle"
 #define BUZZER_ENABLE_FILE "/dev/bone/pwm/0/a/enable"
 
-#define NOTE_C 261.63
-#define NOTE_D 293.66
-#define NOTE_E 329.63
-#define NOTE_F 349.23
-#define NOTE_G 392.00
-#define NOTE_A 440.00
-#define NOTE_B 493.88
-#define NOTE_HIGH_C 523.25
-
 static pthread_t thread;
 
 static bool is_initialized = false;
@@ -21,39 +12,7 @@ static bool isRunning = false;
 static bool playingHit = false;
 static bool playingMiss = false;
 
-static void* soundPlaybackThread();
-
-// // Main thread function
-// // Continuosly samples the a2d reading of potentiometer and adjusts frequency of led accordingly
-// static void* updatePWM()
-// {
-//     long long startTime = getTimeInMs() + 100; //start to initially set the frequency
-//     while (isRunning) {
-//         long long currentTime = getTimeInMs();
-//         if (currentTime - startTime >= 100){
-//                 int a2dReading = getVoltage0Reading();
-//                 if (a2dReading != potReading){
-//                 potReading = a2dReading;
-//                 currentFreq = potReading / FREQUENCY_DIV_FACTOR;
-//                 int period = NANOSECONDS_IN_A_SECOND / currentFreq;
-//                 int dutyCycle = period / 2;
-//                 if (currentFreq == 0){
-//                     writeValueToFile(LED_ENABLE_FILE, 0);
-//                     ledOn = false;
-//                 } else {
-//                     writeValueToFile(LED_PERIOD_FILE, period);
-//                     writeValueToFile(LED_DUTY_CYCLE_FILE, dutyCycle);
-//                     if (!ledOn){
-//                         writeValueToFile(LED_ENABLE_FILE, 1);
-//                         ledOn = true;
-//                     }
-//                 }
-//             }
-//             startTime = currentTime;
-//         }
-//     }
-//     pthread_exit(NULL);
-// }
+static void* soundPlaybackThread(); // thread function
 
 // Write integer value to pwm files
 static void writeValueToFile(const char* filePath, int value)
@@ -93,6 +52,7 @@ static void runCommand(char* command)
     }
 }
 
+// Helper to get period based on a frequency
 static int getPeriod(double frequency)
 {
     return (int)((1.0 / frequency)*1000000000);
@@ -115,12 +75,14 @@ void Buzzer_cleanup(void){
     writeValueToFile(BUZZER_ENABLE_FILE, 0);
 }
 
+// Interface function for registering a hit
 void Buzzer_playHit(void){
     if (!playingHit){
         playingHit = true;
     }
 }
 
+// Interface function for registering a miss
 void Buzzer_playMiss(void){
     if (!playingHit && !playingMiss){
         playingMiss = true;

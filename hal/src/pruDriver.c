@@ -76,6 +76,7 @@ bool PruDriver_isPressedDown(void) {
     return (pSharedPru0->isDownPressed == 0);
 }
 
+// set all leds on the light strip to a colour
 void PruDriver_setAllLeds(uint32_t colour)
 {
     for (int i = 0; i < STR_LEN; i++){
@@ -83,6 +84,8 @@ void PruDriver_setAllLeds(uint32_t colour)
     }
 }
 
+// Set a trio of LEDs on the light strip to the colours specified
+// OK if index is out of bounds, actually expected for when we only want a border LED to light up
 void PruDriver_setTrioLeds(int index, uint32_t colourStrong, uint32_t colourWeak)
 {
     for (int i = 0; i < STR_LEN; i++){
