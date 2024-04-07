@@ -54,12 +54,13 @@ static void runCommand(char* command)
 }
 
 void PruDriver_init(void) {
+    pPruBase = getPruMmapAddr();
+    pSharedPru0 = PRU0_MEM_FROM_BASE(pPruBase);
+    PruDriver_setAllLeds(0x00000000); // set colours to blank so LEDs don't flash on boot
     runCommand("config-pin P8.11 pruout");
     // runCommand("config-pin P8.12 pruout"); // for driving seg display with PRU (not needed)
     runCommand("config-pin P8.15 pruin");
     runCommand("config-pin P8.16 pruin");
-    pPruBase = getPruMmapAddr();
-    pSharedPru0 = PRU0_MEM_FROM_BASE(pPruBase);
     isInitialized = true;
 }
 
